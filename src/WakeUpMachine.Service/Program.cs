@@ -17,17 +17,17 @@ var host = Host.CreateDefaultBuilder(args)
         // Bind WakeUpMachineServiceSettings with appsettings.json section
         services.Configure<WakeUpMachineServiceSettings>(
             context.Configuration.GetSection(WakeUpMachineServiceSettings.SectionName));
-        
+
         // Register background worker
         services.AddHostedService<WakeUpMachineWorker>();
-        
+
         // Telegram client
         services.AddTransient<ITelegramBotClient>(_ =>
         {
             var options = _.GetRequiredService<IOptions<WakeUpMachineServiceSettings>>();
             return new TelegramBotClient(options.Value.BotToken);
         });
-        
+
         // Stateless
         services.AddTransient<IWakeupService, WakeupService>();
         services.AddTransient<IPingService, PingService>();
@@ -37,7 +37,10 @@ var host = Host.CreateDefaultBuilder(args)
         // DbContext related. Needs be scoped.
         services.AddScoped<IUpdateHandler, TelegramBotUpdateHandler>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddDbContext<WakeUpMachineContext>(opt => { opt.UseSqlite(context.Configuration.GetConnectionString("Default")); });
+        services.AddDbContext<WakeUpMachineContext>(opt =>
+        {
+            opt.UseSqlite($"Datasource={Path.Combine(AppContext.BaseDirectory, "WakeUpMachine.db")}");
+        });
 
         // Configurator
         services.AddScoped<WakeUpMachineServiceConfigurator>();
