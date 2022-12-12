@@ -37,29 +37,35 @@ var host = Host.CreateDefaultBuilder(args)
         // DbContext related. Needs be scoped.
         services.AddScoped<IUpdateHandler, TelegramBotUpdateHandler>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddDbContext<WakeUpMachineContext>(opt =>
-        {
-            opt.UseSqlite($"Datasource={Path.Combine(AppContext.BaseDirectory, "WakeUpMachine.db")}");
-        });
+        services.AddDbContext<WakeUpMachineContext>(opt => { opt.UseSqlite(context.Configuration.GetConnectionString("Default")); });
 
-        // Configurator
+        // Configurators
+        services.AddScoped<ConnectionStringConfigurator>();
         services.AddScoped<WakeUpMachineServiceConfigurator>();
     })
     .Build();
-
-// Ensure DB created
-
-await using (var scope = host.Services.CreateAsyncScope())
-{
-    var wakeUpMachineContext = scope.ServiceProvider.GetRequiredService<WakeUpMachineContext>();
-    wakeUpMachineContext.Database.EnsureCreated();
-}
 
 // Run once if '--configure' specified
 
 if (args.Contains("--configure"))
 {
     await using var scope = host.Services.CreateAsyncScope();
+
+    // Firstly, configure initial (empty before) connection string. If CS is already set then skip configuring
+    var connectionStringConfigurator = scope.ServiceProvider.GetRequiredService<ConnectionStringConfigurator>();
+
+    var dbFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WakeUpMachine");
+    var connectionString = $"Data source={Path.Combine(dbFolder, "WakeUpMachine.db")}";
+    await connectionStringConfigurator.Configure(connectionString, false);
+    
+    if (!Directory.Exists(dbFolder))
+        Directory.CreateDirectory(dbFolder);
+
+    // Ensure database is created
+    var wakeUpMachineContext = scope.ServiceProvider.GetRequiredService<WakeUpMachineContext>();
+    wakeUpMachineContext.Database.EnsureCreated();
+
+    // Secondly, any settings
     var serviceConfigurator = scope.ServiceProvider.GetRequiredService<WakeUpMachineServiceConfigurator>();
 
     // Simple parse bot token value
@@ -68,6 +74,14 @@ if (args.Contains("--configure"))
 
     await serviceConfigurator.Configure(botToken);
     return;
+}
+
+// Ensure DB created
+
+await using (var scope = host.Services.CreateAsyncScope())
+{
+    var wakeUpMachineContext = scope.ServiceProvider.GetRequiredService<WakeUpMachineContext>();
+    wakeUpMachineContext.Database.EnsureCreated();
 }
 
 // Check if bot works
