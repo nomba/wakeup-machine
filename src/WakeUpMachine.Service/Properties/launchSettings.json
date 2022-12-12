@@ -13,7 +13,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": "--configure"
+      "commandLineArgs": "configure"
     }
   }
 }

@@ -47,7 +47,7 @@ var host = Host.CreateDefaultBuilder(args)
 
 // Run once if '--configure' specified
 
-if (args.Contains("--configure"))
+if (args.Length >= 1 && args[0] == "configure")
 {
     await using var scope = host.Services.CreateAsyncScope();
 
@@ -57,7 +57,7 @@ if (args.Contains("--configure"))
     var dbFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WakeUpMachine");
     var connectionString = $"Data source={Path.Combine(dbFolder, "WakeUpMachine.db")}";
     await connectionStringConfigurator.Configure(connectionString, false);
-    
+
     if (!Directory.Exists(dbFolder))
         Directory.CreateDirectory(dbFolder);
 
@@ -69,7 +69,7 @@ if (args.Contains("--configure"))
     var serviceConfigurator = scope.ServiceProvider.GetRequiredService<WakeUpMachineServiceConfigurator>();
 
     // Simple parse bot token value
-    var botTokenArg = args.FirstOrDefault(_ => _.StartsWith("--bottoken="));
+    var botTokenArg = args.FirstOrDefault(_ => _.StartsWith("--bot-token="));
     var botToken = botTokenArg?.Split("=", 2)[1];
 
     await serviceConfigurator.Configure(botToken);

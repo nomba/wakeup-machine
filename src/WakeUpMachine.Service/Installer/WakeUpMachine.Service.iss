@@ -37,7 +37,7 @@ ArchitecturesInstallIn64BitMode=x64
 OutputBaseFilename={#"WakeUpMachine.Setup." + ApplicationVersion}
 
 [Run]
-Check: IsNewInstallation; Filename: "{app}\{#ApplicationExeName}"; Parameters: "--configure --bottoken={code:GetBotToken}"; Flags: nowait runascurrentuser runhidden; StatusMsg: "Configuring service..."
+Check: IsNewInstallation; Filename: "{app}\{#ApplicationExeName}"; Parameters: "configure --bot-token={code:GetBotToken}"; Flags: nowait runascurrentuser runhidden; StatusMsg: "Configuring service..."
 Check: IsNewInstallation; Filename: {sys}\sc.exe; Parameters: "create {#ServiceName} start= auto binPath= ""{app}\{#ApplicationExeName}"""; Flags: runhidden
 Check: ServiceExistsDelayed; Filename: {sys}\sc.exe; Parameters: "start {#ServiceName}" ; Flags: runhidden
 
