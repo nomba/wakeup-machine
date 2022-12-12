@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace WakeUpMachine.Service.Configuring;
 
@@ -72,7 +71,7 @@ internal class WakeUpMachineServiceConfigurator
             if (user is null)
             {
                 user = await _userRepository.Add(
-                    new User {Id = userConfig.TelegramUserId, FullName = userConfig.FullName}, CancellationToken.None);
+                    new User { Id = userConfig.TelegramUserId, FullName = userConfig.FullName }, CancellationToken.None);
                 _logger.LogInformation(
                     "New user {NewUserId} ({NewUserFullName}) added to DB ", user.Id, user.FullName);
             }
@@ -141,11 +140,20 @@ internal class WakeUpMachineServiceConfigurator
         var appSettingsJson = JsonNode.Parse(await File.ReadAllTextAsync(appSettingsJsonPath));
         if (appSettingsJson == null)
             throw new InvalidOperationException("Unable to parse appsettings.json.");
+        
+        // Ensure settings section is created
+        appSettingsJson[WakeUpMachineServiceSettings.SectionName] ??= new JsonObject();
 
+        // Update bot token
         appSettingsJson[WakeUpMachineServiceSettings.SectionName]!["BotToken"] = botToken;
 
         await File.WriteAllTextAsync(appSettingsJsonPath,
-            appSettingsJson.ToJsonString(new JsonSerializerOptions {WriteIndented = true}));
+            appSettingsJson.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                // Fix problem with "<>" chars, https://stackoverflow.com/a/58003397
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
 
         _logger.LogInformation("Bot token in {AppSettingsJsonPath} updated", appSettingsJsonPath);
     }
