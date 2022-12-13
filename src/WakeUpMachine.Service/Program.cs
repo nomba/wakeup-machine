@@ -1,17 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using WakeUpMachine.Service;
 using WakeUpMachine.Service.Configuring;
 using WakeUpMachine.Service.Infrastructure;
 
+// Overrides default CurrentDirectory to executable folder path
+Environment.CurrentDirectory = AppContext.BaseDirectory;
+
 // Build host
 
 var host = Host.CreateDefaultBuilder(args)
     .UseContentRoot(AppContext.BaseDirectory)
     .UseWindowsService(options => options.ServiceName = "WakeUpMachine")
-    .ConfigureLogging((context, logging) => { logging.AddConfiguration(context.Configuration.GetSection("Logging")); })
+    .UseSerilog((context, configuration) => { configuration.WriteTo.Console().ReadFrom.Configuration(context.Configuration);})
     .ConfigureServices((context, services) =>
     {
         // Bind WakeUpMachineServiceSettings with appsettings.json section
@@ -45,7 +49,7 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-// Run once if '--configure' specified
+// Run once if 'configure' command specified
 
 if (args.Length >= 1 && args[0] == "configure")
 {

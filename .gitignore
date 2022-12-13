@@ -40,6 +40,8 @@ artifacts/**
 .vs/
 [Bb]in/
 [Oo]bj/
+[Ll]og/
+[Ll]ogs/
 _UpgradeReport_Files/
 [Pp]ackages/
 
