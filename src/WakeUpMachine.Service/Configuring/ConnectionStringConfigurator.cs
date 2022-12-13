@@ -22,10 +22,17 @@ internal class ConnectionStringConfigurator
         if (appSettingsJson == null)
             throw new InvalidOperationException("Unable to parse appsettings.json.");
 
+        // Check if connection string is put in mem configuration
+        if (_configuration["ConnectionStrings:Default"] is not null)
+        {
+            _logger.LogWarning("Skip setting connection string. It is already put into memory configuration");
+            return;
+        }
+            
         // Check if connection string is already set and skip if `overwrite` disabled
         if (!overwrite && appSettingsJson["ConnectionStrings"]?["Default"] is not null)
         {
-            _logger.LogInformation("Connection string is already set. Overwrite option is disabled. Skip setting");
+            _logger.LogInformation("Skip setting connection string. It is already put into conf file. Overwrite option is disabled");
             return;
         }
 
