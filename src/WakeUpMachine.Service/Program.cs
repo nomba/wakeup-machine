@@ -4,7 +4,6 @@ using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using WakeUpMachine.Service;
-using WakeUpMachine.Service.Configuring;
 using WakeUpMachine.Service.Infrastructure;
 using WakeUpMachine.Service.Maintenance;
 

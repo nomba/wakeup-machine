@@ -1,4 +1,4 @@
-namespace WakeUpMachine.Service.Configuring;
+namespace WakeUpMachine.Service.Maintenance;
 
 internal class UserConfig
 {

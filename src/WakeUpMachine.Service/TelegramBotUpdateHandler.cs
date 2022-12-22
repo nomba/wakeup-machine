@@ -5,7 +5,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using WakeUpMachine.Service.Application.Commands;
-using WakeUpMachine.Service.Configuring;
+using WakeUpMachine.Service.Maintenance;
 
 namespace WakeUpMachine.Service;
 

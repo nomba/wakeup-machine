@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Options;
-using WakeUpMachine.Service.Configuring;
+using WakeUpMachine.Service.Maintenance;
 
 namespace WakeUpMachine.Service;
 

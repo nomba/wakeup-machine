@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
 
-namespace WakeUpMachine.Service.Configuring;
+namespace WakeUpMachine.Service.Maintenance;
 
 internal class WakeUpMachineServiceConfigurator
 {

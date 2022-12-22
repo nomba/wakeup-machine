@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace WakeUpMachine.Service.Configuring;
+namespace WakeUpMachine.Service.Maintenance;
 
 internal class ConnectionStringConfigurator
 {

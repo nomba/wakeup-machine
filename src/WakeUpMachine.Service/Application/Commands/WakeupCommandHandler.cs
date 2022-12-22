@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using WakeUpMachine.Service.Configuring;
+using WakeUpMachine.Service.Maintenance;
 
 namespace WakeUpMachine.Service.Application.Commands;
 
