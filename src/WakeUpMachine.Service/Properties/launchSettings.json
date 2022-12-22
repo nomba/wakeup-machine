@@ -14,6 +14,14 @@
         "DOTNET_ENVIRONMENT": "Development"
       },
       "commandLineArgs": "configure"
+    },
+    "Backup": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": "backup"
     }
   }
 }

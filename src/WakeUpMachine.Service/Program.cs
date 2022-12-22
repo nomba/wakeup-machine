@@ -6,6 +6,7 @@ using Telegram.Bot.Polling;
 using WakeUpMachine.Service;
 using WakeUpMachine.Service.Configuring;
 using WakeUpMachine.Service.Infrastructure;
+using WakeUpMachine.Service.Maintenance;
 
 // Overrides default CurrentDirectory to executable folder path
 Environment.CurrentDirectory = AppContext.BaseDirectory;
@@ -46,10 +47,14 @@ var host = Host.CreateDefaultBuilder(args)
         // Configurators
         services.AddScoped<ConnectionStringConfigurator>();
         services.AddScoped<WakeUpMachineServiceConfigurator>();
+        
+        // Backup
+        services.AddScoped<BackupCreator>();
     })
     .Build();
 
-// Run once if 'configure' command specified
+// `configure` command
+// Provides initial configuring and further configuring by administrator  
 
 if (args.Length >= 1 && args[0] == "configure")
 {
@@ -77,6 +82,18 @@ if (args.Length >= 1 && args[0] == "configure")
     var botToken = botTokenArg?.Split("=", 2)[1];
 
     await serviceConfigurator.Configure(botToken);
+    return;
+}
+
+// `backup` command 
+// Needs do backup database file and appSettings.json
+
+if (args.Length >= 1 && args[0] == "backup")
+{
+    await using var scope = host.Services.CreateAsyncScope();
+    var backupCreator = scope.ServiceProvider.GetRequiredService<BackupCreator>();
+
+    await backupCreator.Backup();
     return;
 }
 
